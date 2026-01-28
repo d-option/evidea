@@ -1,0 +1,4 @@
+{
+  "buildCommand": "npx prisma migrate deploy --schema prisma/schema.prisma && next build"
+}
+
