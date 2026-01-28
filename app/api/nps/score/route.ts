@@ -16,6 +16,12 @@ type NpsScorePayload = {
 
 export async function POST(req: Request) {
   try {
+    const url = new URL(req.url);
+    console.log("[nps/score] hit", { path: url.pathname, hasBody: true });
+    if (url.searchParams.get("dryRun") === "1") {
+      return NextResponse.json({ ok: true, dryRun: true }, { headers: corsHeaders });
+    }
+
     const body = (await req.json()) as NpsScorePayload;
     const transactionId = body.nps_transaction_id;
     const score = Number(body.nps_score);

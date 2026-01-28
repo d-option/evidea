@@ -16,6 +16,12 @@ type NpsNotePayload = {
 
 export async function POST(req: Request) {
   try {
+    const url = new URL(req.url);
+    console.log("[nps/note] hit", { path: url.pathname, hasBody: true });
+    if (url.searchParams.get("dryRun") === "1") {
+      return NextResponse.json({ ok: true, dryRun: true }, { headers: corsHeaders });
+    }
+
     const body = (await req.json()) as NpsNotePayload;
     if (!body.id) {
       return NextResponse.json(

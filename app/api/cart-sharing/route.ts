@@ -17,6 +17,12 @@ type CartSharingCreatePayload = {
 
 export async function POST(req: Request) {
   try {
+    const url = new URL(req.url);
+    console.log("[cart-sharing] hit", { path: url.pathname, hasBody: true });
+    if (url.searchParams.get("dryRun") === "1") {
+      return NextResponse.json({ ok: true, dryRun: true, id: "dry-run" }, { headers: corsHeaders });
+    }
+
     const body = (await req.json()) as CartSharingCreatePayload;
 
     if (!Array.isArray(body.products)) {
