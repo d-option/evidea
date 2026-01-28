@@ -13,21 +13,26 @@ export async function GET(req: Request) {
     const product = url.searchParams.get("product");
     const action = url.searchParams.get("action") ?? "add-to-basket";
 
-    await prisma.addToCartLog.create({
-      data: {
-        user: user || null,
-        product: product || null,
-        action,
-      },
-      select: { id: true },
-    });
+    try {
+      await prisma.addToCartLog.create({
+        data: {
+          user: user || null,
+          product: product || null,
+          action,
+        },
+        select: { id: true },
+      });
+    } catch (e) {
+      // Tracking endpoint: GTM akışını asla bozmasın.
+      // Detayı Vercel logs üzerinden görebilmek için logla.
+      console.error("[add-to-basket] DB write failed:", e);
+    }
 
     return NextResponse.json({ ok: true }, { headers: corsHeaders });
-  } catch {
-    return NextResponse.json(
-      { error: "internal_error" },
-      { status: 500, headers: corsHeaders }
-    );
+  } catch (e) {
+    console.error("[add-to-basket] handler failed:", e);
+    // Yine de 200 dönelim; bu endpoint “best-effort log” içindir.
+    return NextResponse.json({ ok: true }, { headers: corsHeaders });
   }
 }
 

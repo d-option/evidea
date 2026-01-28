@@ -5,7 +5,7 @@
   "main": "backup.js",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/migrate-if-postgres.js && next build",
     "start": "next start",
     "test:api": "ts-node scripts/test-endpoints.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
