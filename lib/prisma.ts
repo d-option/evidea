@@ -7,17 +7,16 @@ declare global {
 
 function buildRuntimeDatabaseUrl(): string | undefined {
   // Vercel Neon integration genelde hem pooled hem non-pooled URL verir.
-  // Runtime'da (serverless) pooler bazen timeout/reset üretebildiği için
-  // mümkünse non-pooling URL'yi tercih ediyoruz.
+  // Runtime'da (serverless) genelde pooled/pooler URL önerilir. (Non-pooled URL migration/DDL için daha uygun.)
   const raw =
-    process.env.POSTGRES_URL_NON_POOLING ||
     process.env.POSTGRES_PRISMA_URL ||
+    process.env.POSTGRES_URL_NON_POOLING ||
     process.env.POSTGRES_URL ||
     process.env.DATABASE_URL;
 
   if (!raw) return undefined;
 
-  // Eğer pooler kullanılıyorsa (fallback), pgbouncer parametresini güvenceye al.
+  // Eğer pooler kullanılıyorsa pgbouncer + düşük bağlantı limitini güvenceye al.
   try {
     const u = new URL(raw);
     const isPooler = u.hostname.includes("-pooler.");
@@ -25,6 +24,8 @@ function buildRuntimeDatabaseUrl(): string | undefined {
       if (!u.searchParams.has("pgbouncer")) u.searchParams.set("pgbouncer", "true");
       if (!u.searchParams.has("connection_limit"))
         u.searchParams.set("connection_limit", "1");
+      if (!u.searchParams.has("connect_timeout"))
+        u.searchParams.set("connect_timeout", "15");
     }
     return u.toString();
   } catch {
