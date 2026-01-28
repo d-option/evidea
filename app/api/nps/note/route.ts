@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { corsHeaders, corsOptionsResponse } from "@/app/api/_cors";
 
 export const runtime = "nodejs";
@@ -30,6 +29,7 @@ export async function POST(req: Request) {
       );
     }
 
+    const { prisma } = await import("@/lib/prisma");
     const updated = await prisma.npsVote.update({
       where: { id: body.id },
       data: { note: body.nps_note ?? null },

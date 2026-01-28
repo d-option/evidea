@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { corsHeaders, corsOptionsResponse } from "@/app/api/_cors";
 
 export const runtime = "nodejs";
@@ -32,6 +31,7 @@ export async function POST(req: Request) {
       );
     }
 
+    const { prisma } = await import("@/lib/prisma");
     const created = await prisma.cartShare.create({
       data: {
         basketName: body.basket?.name ?? null,
