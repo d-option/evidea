@@ -1,0 +1,38 @@
+// Local development schema (SQLite)
+// Use with:
+//   DATABASE_URL="file:./prisma/dev.db" npx prisma migrate dev --schema prisma/schema.sqlite.prisma
+//   DATABASE_URL="file:./prisma/dev.db" npx prisma generate --schema prisma/schema.sqlite.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model CartShare {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  basketName String?
+  products   String
+  userId     String?
+}
+
+model NpsVote {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  score         Int
+  transactionId String
+  note          String?
+}
+
+model AddToCartLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  user      String?
+  product   String?
+  action    String   @default("add-to-basket")
+}
+

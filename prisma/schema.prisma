@@ -1,0 +1,39 @@
+// Prisma schema (SQLite for local dev)
+// Production’da PostgreSQL’e geçmek için:
+// - provider = "postgresql"
+// - DATABASE_URL = postgres connection string
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model CartShare {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  basketName String?
+  products   String
+  userId     String?
+}
+
+model NpsVote {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  score         Int
+  transactionId String
+  note          String?
+}
+
+model AddToCartLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  user      String?
+  product   String?
+  action    String   @default("add-to-basket")
+}
+
